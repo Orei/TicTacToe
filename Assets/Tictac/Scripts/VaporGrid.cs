@@ -1,9 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Dynamic vaporwave-type grid.
-/// </summary>
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class VaporGrid : MonoBehaviour
 {
@@ -13,8 +10,11 @@ public class VaporGrid : MonoBehaviour
     [SerializeField] private int gridSize = 100;
     [Tooltip("Scales the grid cells, each cell is 1 unit by default.")]
     [SerializeField] private float scale = 1f;
+    [Tooltip("Time between grid updates; default value is 1 / 60, meaning 60 updates per second.\nCan only run as fast as update itself.")]
+    [SerializeField, Range(0f, 1f)] private float updateInterval = 1f / 60f;
     private AnimationCurve curve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     private Coroutine routine = null;
+    private float lastUpdate = 0f;
 
     private MeshFilter filter = null;
     private new MeshRenderer renderer = null;
@@ -22,7 +22,6 @@ public class VaporGrid : MonoBehaviour
     private Vector3[] vertices = null;
     private int[] triangles = null;
     private Vector2[] uvs = null;
-    private Vector3[] normals = null;
 
     public int NumCells => gridSize * gridSize;
 
@@ -45,7 +44,6 @@ public class VaporGrid : MonoBehaviour
         vertices = new Vector3[tiles * 4];
         triangles = new int[tiles * 6];
         uvs = new Vector2[tiles * 4];
-        normals = new Vector3[tiles * 4];
 
         // Create triangles
 		for (int i = 0; i < triangles.Length; i += 6)
@@ -71,7 +69,7 @@ public class VaporGrid : MonoBehaviour
             uvs[i + 3] = new Vector2(1f, 1f);
         }
 
-        // Create tiles
+        // Create vertices
         for (int i = 0; i < tiles; i += 4)
         {
             var x = (i % gridSize) / 4;
@@ -102,8 +100,11 @@ public class VaporGrid : MonoBehaviour
         filter.mesh.RecalculateBounds();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        if (updateInterval != 0f && Time.time - lastUpdate < updateInterval)
+            return;
+
         for (int i = 0; i < NumCells; i += 4)
         {
             vertices[i + 0] = GetVertexXZ(i + 0) + GetVertexY(i + 0);
@@ -114,6 +115,8 @@ public class VaporGrid : MonoBehaviour
 
         filter.mesh.vertices = vertices;
         filter.mesh.RecalculateBounds();
+
+        lastUpdate = Time.time;
     }
 
     private Vector3 GetVertexXZ(int index)
@@ -141,10 +144,10 @@ public class VaporGrid : MonoBehaviour
         if (routine != null)
             StopCoroutine(routine);
 
-        routine = StartCoroutine(_SetColor(color, duration));
+        routine = StartCoroutine(SetColorRoutine(color, duration));
     }
 
-    private IEnumerator _SetColor(Color color, float duration)
+    private IEnumerator SetColorRoutine(Color color, float duration)
     {
         Color original = renderer.material.GetColor("_WireColor");
 
