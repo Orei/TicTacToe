@@ -57,10 +57,12 @@ public class TextDrop : MonoBehaviour
     /// </summary>
     public void SetText(string text)
     {
-        textMesh?.SetText(text);
+        if (textMesh != null)
+            textMesh.SetText(text);
 
         for (int i = 0; i < backdrops.Length; i++)
-            backdrops[i]?.SetText(text);
+            if (backdrops[i] != null)
+                backdrops[i].SetText(text);
     }
 
     /// <summary>

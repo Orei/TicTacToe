@@ -11,8 +11,11 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        scaler = textMesh?.GetComponent<Scaler>();
-        backdrop = textMesh?.GetComponent<TextDrop>();
+        if (textMesh != null)
+        {
+            scaler = textMesh.GetComponent<Scaler>();
+            backdrop = textMesh.GetComponent<TextDrop>();
+        }
 
         Debug.Assert(textMesh != null, "Unable to find TextMeshPro component.");
         Debug.Assert(scaler != null, "Unable to find Scaler component in textMesh.");
@@ -22,7 +25,8 @@ public class UIManager : MonoBehaviour
     // Order is important here, backdrops are created on Start, not Awake
     private void Start()
     {
-        backdrop?.SetText(string.Empty);
+        if (backdrop != null)
+            backdrop.SetText(string.Empty);
     }
 
     private void Update()
@@ -34,7 +38,9 @@ public class UIManager : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
             {
                 UIButton button = hit.transform.GetComponent<UIButton>();
-                button?.Toggle();
+
+                if (button != null)
+                    button.Toggle();
             }
         }
     }
@@ -49,10 +55,10 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator Display(string text, float duration)
     {
-        scaler?.ScaleIn(0.50f);
-        backdrop?.SetText(text);
+        scaler.ScaleIn(0.50f);
+        backdrop.SetText(text);
         yield return new WaitForSeconds(duration);
-        scaler?.ScaleOut(0.25f);
+        scaler.ScaleOut(0.25f);
         yield return null;
     }
 }

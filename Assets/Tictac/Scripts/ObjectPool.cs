@@ -46,7 +46,9 @@ public class ObjectPool : MonoBehaviour
                 obj.SetActive(false);
 
                 MeshRenderer renderer = obj.GetComponentInChildren<MeshRenderer>();
-                renderer?.material.SetColor("_EmissionColor", player.Color);
+
+                if (renderer != null && renderer.material != null)
+                    renderer.material.SetColor("_EmissionColor", player.Color);
 
                 pieces[i].Add(obj);
             }

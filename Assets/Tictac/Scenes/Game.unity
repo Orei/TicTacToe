@@ -881,6 +881,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSize: 120
   scale: 1
+  updateInterval: 0.03333333
 --- !u!23 &1379419182
 MeshRenderer:
   m_ObjectHideFlags: 0

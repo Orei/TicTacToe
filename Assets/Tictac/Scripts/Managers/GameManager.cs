@@ -35,9 +35,9 @@ public class GameManager : MonoBehaviour
         Debug.Assert(audio != null, $"Couldn't find AudioManager component on {transform.name}.");
         Debug.Assert(grid != null, $"Couldn't find VaporGrid.");
 
-        board?.Create(players);
-        audio?.Play(backgroundMusic);
-        grid?.SetColor(players[turn].Color, 0.2f);
+        if (board != null) board.Create(players);
+        if (audio != null) audio.Play(backgroundMusic);
+        if (grid != null) grid.SetColor(players[turn].Color, 0.2f);
     }
 
     private void Update()
@@ -51,7 +51,9 @@ public class GameManager : MonoBehaviour
         if (players == null || players.Length <= 0 || board == null || hasEnded)
             return;
 
-        players[turn].Controller?.Process(this);
+        var player = players[turn];
+        if (player.Controller != null)
+            player.Controller.Process(this);
     }
 
     public void Place(int cell)

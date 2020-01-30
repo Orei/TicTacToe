@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 /// <summary>
@@ -45,16 +44,16 @@ public class GameBoard : MonoBehaviour
     [Tooltip("Adds spacing between each cell.")]
     [SerializeField] private float spacing = 0.1f;
     [Tooltip("Size of the cell grid.")]
-    [SerializeField] private int size = 4;
+    [SerializeField] private int size = 3;
     [Tooltip("Number of cells required in a row to win.")]
-    [SerializeField] private int numWinningCells = 4;
+    [SerializeField] private int numWinningCells = 3;
     private ObjectPool pool = null; 
 
     private void Awake()
     {
         pool = GetComponent<ObjectPool>();
 
-        Debug.Assert(pool != null, "Unable to get/create ObjectPool component.");
+        Debug.Assert(pool != null, "Unable to get ObjectPool component.");
     }
 
     /// <summary>
@@ -111,7 +110,9 @@ public class GameBoard : MonoBehaviour
             
             // Update tile index, used to identify which cell we want to place
             CellData data = tile.GetComponent<CellData>();
-            data?.SetIndex(i);
+
+            if (data != null)
+                data.SetIndex(i);
         }
     }
 
